@@ -1,0 +1,801 @@
+loadstring(game:HttpGet(("https://raw.githubusercontent.com/REDzHUB/LibraryV2/main/redzLib")))()
+
+MakeWindow({
+  Hub = {
+    Title = "DemonicHub",
+    Animation = "by : DemonicOfficial"
+  },
+  
+  Key = {
+    KeySystem = true,
+    Title = "Key System",
+    Description = "",
+    KeyLink = "https://pastebin.com/dtVMJwue",
+    Keys = {"1lov3y0u"},
+    Notifi = {
+      Notifications = true,
+      CorrectKey = "Running the Script...",
+      Incorrectkey = "The key is incorrect",
+      CopyKeyLink = "https://pastebin.com/dtVMJwue"
+    }
+  }
+})
+  
+  local Main = MakeTab({Name = "Main"})
+  
+  MakeNotifi({
+  Title = "Credit to Demonic_Official",
+  Text = "script running!!",
+  Time = 5
+})
+
+AddButton(Main, {
+  Name = "Silent Aim",
+  Callback = function()local fov = 30
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Cam = game.Workspace.CurrentCamera
+ 
+local FOVring = Drawing.new("Circle")
+FOVring.Visible = true
+FOVring.Thickness = 2
+FOVring.Color = Color3.fromRGB(128, 0, 128) -- Purple color
+FOVring.Filled = false
+FOVring.Radius = fov
+FOVring.Position = Cam.ViewportSize / 2
+ 
+local function updateDrawings()
+    local camViewportSize = Cam.ViewportSize
+    FOVring.Position = camViewportSize / 2
+end
+ 
+local function onKeyDown(input)
+    if input.KeyCode == Enum.KeyCode.Delete then
+        RunService:UnbindFromRenderStep("FOVUpdate")
+        FOVring:Remove()
+    end
+end
+ 
+UserInputService.InputBegan:Connect(onKeyDown)
+ 
+local function lookAt(target)
+    local lookVector = (target - Cam.CFrame.Position).unit
+    local newCFrame = CFrame.new(Cam.CFrame.Position, Cam.CFrame.Position + lookVector)
+    Cam.CFrame = newCFrame
+end
+ 
+local function getClosestPlayerInFOV(trg_part)
+    local nearest = nil
+    local last = math.huge
+    local playerMousePos = Cam.ViewportSize / 2
+ 
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            local part = player.Character and player.Character:FindFirstChild(trg_part)
+            if part then
+                local ePos, isVisible = Cam:WorldToViewportPoint(part.Position)
+                local distance = (Vector2.new(ePos.x, ePos.y) - playerMousePos).Magnitude
+ 
+                if distance < last and isVisible and distance < fov then
+                    last = distance
+                    nearest = player
+                end
+            end
+        end
+    end
+ 
+    return nearest
+end
+ 
+RunService.RenderStepped:Connect(function()
+    updateDrawings()
+    local closest = getClosestPlayerInFOV("Head")
+    if closest and closest.Character:FindFirstChild("Head") then
+        lookAt(closest.Character.Head.Position)
+    end
+end)
+   
+  end
+})
+
+AddTextBox(Main,{
+  Name = "Hitbox",
+  Default = "",
+  PlaceholderText = "Value",
+  ClearText = true,
+  Callback = function(value)
+    _G.HeadSize = value
+_G.Disabled = true
+ 
+game:GetService('RunService').RenderStepped:connect(function()
+if _G.Disabled then
+for i,v in next, game:GetService('Players'):GetPlayers() do
+if v.Name ~= game:GetService('Players').LocalPlayer.Name then
+pcall(function()
+v.Character.HumanoidRootPart.Size = Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize)
+v.Character.HumanoidRootPart.Transparency = 0.7
+v.Character.HumanoidRootPart.BrickColor = BrickColor.new("Really white")
+v.Character.HumanoidRootPart.Material = "Neon"
+v.Character.HumanoidRootPart.CanCollide = false
+end)
+end
+end
+end
+end)
+      end
+})
+
+local Main = MakeTab({Name = "Esp"})
+
+AddButton(Main, {
+  Name = "Esp",
+  Callback = function()local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local Settings = {
+    ESP_Enabled = true,
+    ESP_TeamCheck = false,
+    Chams = true,
+    Chams_Color = Color3.fromRGB(0, 0, 255),
+    Chams_Transparency = 0.9,
+    Chams_Glow_Color = Color3.fromRGB(255, 0, 0),
+    Glow_Transparency = 0.3
+}
+
+local function DestroyChams(character)
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and part.Transparency ~= 1 then
+            local glow = part:FindFirstChild("Glow")
+            local chams = part:FindFirstChild("Chams")
+
+            if glow then glow:Destroy() end
+            if chams then chams:Destroy() end
+        end
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    if Settings.ESP_Enabled then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local humanoid = player.Character:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    if not (Settings.ESP_TeamCheck and player.Team == LocalPlayer.Team) then
+                        local character = player.Character
+
+                        for _, part in ipairs(character:GetChildren()) do
+                            if part:IsA("BasePart") and part.Transparency ~= 1 then
+                                if Settings.Chams then
+                                    if not part:FindFirstChild("Glow") and not part:FindFirstChild("Chams") then
+                                        local chamsBox = Instance.new("BoxHandleAdornment", part)
+                                        chamsBox.Name = "Chams"
+                                        chamsBox.AlwaysOnTop = true
+                                        chamsBox.ZIndex = 4
+                                        chamsBox.Adornee = part
+                                        chamsBox.Color3 = Settings.Chams_Color
+                                        chamsBox.Transparency = Settings.Chams_Transparency
+                                        chamsBox.Size = part.Size + Vector3.new(0.02, 0.02, 0.02)
+
+                                        local glowBox = Instance.new("BoxHandleAdornment", part)
+                                        glowBox.Name = "Glow"
+                                        glowBox.AlwaysOnTop = false
+                                        glowBox.ZIndex = 3
+                                        glowBox.Adornee = part
+                                        glowBox.Color3 = Settings.Chams_Glow_Color
+                                        glowBox.Size = chamsBox.Size + Vector3.new(0.13, 0.13, 0.13)
+                                        glowBox.Transparency = Settings.Glow_Transparency
+                                    end
+                                else
+                                    DestroyChams(character)
+                                end
+                            end
+                        end
+                    else
+                        DestroyChams(player.Character)
+                    end
+                else
+                    DestroyChams(player.Character)
+                end
+            end
+        end
+    else
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local humanoid = player.Character:FindFirstChild("Humanoid")
+                if humanoid and humanoid.Health > 0 then
+                    DestroyChams(player.Character)
+                end
+            end
+        end
+    end
+end)
+  
+  end
+})
+  
+local Main = MakeTab({Name = "Character"})
+  
+AddButton(Main, {
+  Name = "Godmode",
+  Callback = function()loadstring(game:HttpGet("https://raw.githubusercontent.com/zephyr10101/ignore-touchinterests/main/main",true))()
+  
+  end
+})
+  
+AddButton(Main, {
+  Name = "Korblox",
+  Callback = function()local char = game:GetService("Players").LocalPlayer.Character
+
+char.RightFoot.MeshId = "http://www.roblox.com/asset/?id=902942089"
+char.RightFoot.Transparency = 1
+char.RightLowerLeg.MeshId = "http://www.roblox.com/asset/?id=902942093"
+char.RightLowerLeg.Transparency = 1
+char.RightUpperLeg.MeshId = "http://www.roblox.com/asset/?id=902942096"
+char.RightUpperLeg.TextureID = "http://roblox.com/asset/?id=902843398"
+  
+local Main = MakeTab({Name = "Teleport"})
+  
+AddButton(Main, {
+  Name = "Teleport",
+  Callback = function()local Gui = Instance.new("ScreenGui")
+local BackGround = Instance.new("Frame")
+local PlayerTextBox = Instance.new("TextBox")
+local ExitGuiButton = Instance.new("TextButton")
+local TeleportButton = Instance.new("ImageButton")
+local FastTeleportButton = Instance.new("TextButton")
+
+
+Gui.Name = "Gui"
+Gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.ResetOnSpawn = false
+
+BackGround.Name = "BackGround"
+BackGround.Parent = Gui
+BackGround.Active = true
+BackGround.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+BackGround.BorderColor3 = Color3.fromRGB(27, 42, 53)
+BackGround.BorderSizePixel = 0
+BackGround.Draggable = true
+BackGround.Position = UDim2.new(0.414194375, -35, 0.447971016, -5)
+BackGround.Size = UDim2.new(0, 220, 0, 70)
+BackGround.Active = true
+BackGround.Draggable = true
+
+PlayerTextBox.Name = "PlayerTextBox"
+PlayerTextBox.Parent = BackGround
+PlayerTextBox.BackgroundColor3 = Color3.fromRGB(93, 93, 93)
+PlayerTextBox.BorderColor3 = Color3.fromRGB(38, 38, 38)
+PlayerTextBox.BorderSizePixel = 3
+PlayerTextBox.Position = UDim2.new(0.0606889203, 0, 0.156255662, 0)
+PlayerTextBox.Size = UDim2.new(0, 189, 0, 47)
+PlayerTextBox.ClearTextOnFocus = false
+PlayerTextBox.Font = Enum.Font.JosefinSans
+PlayerTextBox.PlaceholderText = "Player Name"
+PlayerTextBox.Text = ""
+PlayerTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlayerTextBox.TextScaled = true
+PlayerTextBox.TextSize = 14.000
+PlayerTextBox.TextWrapped = true
+
+ExitGuiButton.Name = "ExitGuiButton"
+ExitGuiButton.Parent = BackGround
+ExitGuiButton.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
+ExitGuiButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
+ExitGuiButton.BorderSizePixel = 3
+ExitGuiButton.Position = UDim2.new(0.853980601, 0, -0.304931432, 0)
+ExitGuiButton.Size = UDim2.new(0, 21, 0, 21)
+ExitGuiButton.Font = Enum.Font.JosefinSans
+ExitGuiButton.Text = "X"
+ExitGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExitGuiButton.TextSize = 14.000
+ExitGuiButton.TextWrapped = true
+
+TeleportButton.Name = "TeleportButton"
+TeleportButton.Parent = BackGround
+TeleportButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TeleportButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
+TeleportButton.BorderSizePixel = 3
+TeleportButton.Position = UDim2.new(0.763071358, 0, -0.304931432, 0)
+TeleportButton.Size = UDim2.new(0, 20, 0, 20)
+TeleportButton.Image = "http://www.roblox.com/asset/?id=7676225854"
+
+FastTeleportButton.Name = "FastTeleportButton"
+FastTeleportButton.Parent = BackGround
+FastTeleportButton.BackgroundColor3 = Color3.fromRGB(255, 64, 67)
+FastTeleportButton.BorderColor3 = Color3.fromRGB(50, 50, 50)
+FastTeleportButton.BorderSizePixel = 3
+FastTeleportButton.Position = UDim2.new(0.672162294, 0, -0.304931402, 0)
+FastTeleportButton.Size = UDim2.new(0, 20, 0, 20)
+FastTeleportButton.Font = Enum.Font.SourceSans
+FastTeleportButton.Text = ""
+FastTeleportButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+FastTeleportButton.TextSize = 14.000
+
+local UIS = game:GetService("UserInputService")
+local guiMode = true
+local fastTpMode = false
+local fastWhileMode = false
+
+UIS.InputBegan:Connect(function (UserInput)
+	if UserInput.UserInputType == Enum.UserInputType.Keyboard and UserInput.KeyCode == Enum.KeyCode.Insert then
+		if guiMode == true then
+			Gui.Enabled = false
+			guiMode = false
+		else
+			Gui.Enabled = true
+			guiMode = true
+		end
+	end
+end)
+
+PlayerTextBox.FocusLost:Connect(function(enter)
+	if enter then
+		local boxText = PlayerTextBox.Text
+		local plr1 = game.Players.LocalPlayer.Character
+		local plr2 = game:GetService("Players"):FindFirstChild(boxText)
+
+		plr1.HumanoidRootPart.CFrame = plr2.Character.HumanoidRootPart.CFrame
+	end
+end)
+
+ExitGuiButton.MouseButton1Click:Connect(function()
+	Gui:Destroy()
+end)
+
+TeleportButton.MouseButton1Click:Connect(function()
+	local playerText = PlayerTextBox.Text
+	local p1 = game.Players.LocalPlayer.Character
+	local p2 = game:GetService("Players"):FindFirstChild(playerText)
+
+	p1.HumanoidRootPart.CFrame = p2.Character.HumanoidRootPart.CFrame
+end)
+
+FastTeleportButton.MouseButton1Click:Connect(function()
+	if fastTpMode == true then
+		FastTeleportButton.BackgroundColor3 = Color3.fromRGB(255, 64, 67)
+		fastTpMode = false
+		if fastTpMode == false then
+			fastWhileMode = false
+		end
+	else
+		FastTeleportButton.BackgroundColor3 = Color3.fromRGB(67, 255, 67)
+		fastTpMode = true
+		if fastTpMode == true then
+			fastWhileMode = true
+			while fastWhileMode == true do
+				wait()
+				local plText = PlayerTextBox.Text
+				local pl1 = game.Players.LocalPlayer.Character
+				local pl2 = game:GetService("Players"):FindFirstChild(plText)
+				
+				pl1.HumanoidRootPart.CFrame = pl2.Character.HumanoidRootPart.CFrame
+			end
+		end
+	end
+end)
+
+  end
+})
+
+local Main = MakeTab({Name = "Bypass Chat"})
+
+AddButton(Main, {
+  Name = "Chat Bypass(By Darky)",
+  Callback = function()Notification:Notify(
+       {Title = "Credits to Darky", Description = "Darky Bypasser"},
+       {OutlineColor = Color3.fromRGB(80, 80, 80), Time = 8, Type = "default"}
+    )
+local G2L = {}
+G2L["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"))
+G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling
+G2L["2"] = Instance.new("Frame", G2L["1"])
+G2L["2"]["BorderSizePixel"] = 0
+G2L["2"]["BackgroundColor3"] = Color3.fromRGB(68, 71, 75)
+G2L["2"]["Size"] = UDim2.new(0, 200, 0, 195)
+G2L["2"]["Position"] = UDim2.new(0.5, -100, 0.5, -97)
+G2L["2"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["3"] = Instance.new("TextButton", G2L["2"])
+G2L["3"]["BorderSizePixel"] = 0
+G2L["3"]["TextSize"] = 23
+G2L["3"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["3"]["BackgroundColor3"] = Color3.fromRGB(32, 35, 38)
+G2L["3"]["FontFace"] =
+    Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["3"]["Size"] = UDim2.new(0, 130, 0, 26)
+G2L["3"]["Name"] = [[close]]
+G2L["3"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["3"]["Text"] = [[fuck off]]
+G2L["3"]["Position"] = UDim2.new(0.5, -65, 0.8, 0)
+G2L["4"] = Instance.new("TextButton", G2L["2"])
+G2L["4"]["TextWrapped"] = true
+G2L["4"]["BorderSizePixel"] = 0
+G2L["4"]["TextSize"] = 27
+G2L["4"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["4"]["BackgroundColor3"] = Color3.fromRGB(116, 139, 220)
+G2L["4"]["FontFace"] =
+    Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["4"]["Size"] = UDim2.new(0, 152, 0, 30)
+G2L["4"]["Name"] = [[copy]]
+G2L["4"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["4"]["Text"] = [[copy link]]
+G2L["4"]["Position"] = UDim2.new(0.5, -76, 0.6, 0)
+G2L["5"] = Instance.new("UICorner", G2L["4"])
+G2L["5"]["CornerRadius"] = UDim.new(0, 2)
+G2L["6"] = Instance.new("TextLabel", G2L["2"])
+G2L["6"]["TextWrapped"] = true
+G2L["6"]["BorderSizePixel"] = 0
+G2L["6"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["6"]["TextSize"] = 30
+G2L["6"]["FontFace"] =
+    Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["6"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["6"]["BackgroundTransparency"] = 1
+G2L["6"]["Size"] = UDim2.new(0, 200, 0, 61)
+G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["6"]["Text"] = [[join the discord :3]]
+G2L["6"]["Name"] = [[join]]
+G2L["6"]["Position"] = UDim2.new(0.5, -100, 0, 0)
+G2L["7"] = Instance.new("UICorner", G2L["2"])
+G2L["7"]["CornerRadius"] = UDim.new(0, 4)
+G2L["8"] = Instance.new("ImageLabel", G2L["2"])
+G2L["8"]["BorderSizePixel"] = 0
+G2L["8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["8"]["Image"] = [[rbxassetid://72161096187712]]
+G2L["8"]["Size"] = UDim2.new(0, 73, 0, 75)
+G2L["8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["8"]["BackgroundTransparency"] = 1
+G2L["8"]["Position"] = UDim2.new(0.695, -36, 0.21025, 0)
+G2L["9"] = Instance.new("ImageLabel", G2L["2"])
+G2L["9"]["BorderSizePixel"] = 0
+G2L["9"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["9"]["Image"] = [[rbxassetid://72161096187712]]
+G2L["9"]["Size"] = UDim2.new(0, 100, 0, 66)
+G2L["9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["9"]["BackgroundTransparency"] = 1
+G2L["9"]["Position"] = UDim2.new(0.29, -50, 0.25641, 0)
+G2L["a"] = Instance.new("LocalScript", G2L["2"])
+G2L["a"]["Name"] = [[close]]
+G2L["b"] = Instance.new("LocalScript", G2L["2"])
+G2L["b"]["Name"] = [[copy]]
+G2L["c"] = Instance.new("LocalScript", G2L["2"])
+local function C_a()
+    local script = G2L["a"]
+    local TweenService = game:GetService("TweenService")
+    local player = game.Players.LocalPlayer
+    local screenGui = script.Parent.Parent
+    local frame = screenGui:WaitForChild("Frame")
+    local closeButton = frame:WaitForChild("close")
+    local fadeOutTime = 1
+    local function fadeOutFrameAndContents(frame)
+        for _, descendant in ipairs(frame:GetDescendants()) do
+            if descendant:IsA("GuiObject") then
+                local tweenInfo = {}
+                if descendant:IsA("TextLabel") or descendant:IsA("TextButton") then
+                    tweenInfo.TextTransparency = 1
+                end
+                if descendant:IsA("ImageLabel") or descendant:IsA("ImageButton") then
+                    tweenInfo.ImageTransparency = 1
+                end
+                tweenInfo.BackgroundTransparency = 1
+                local fadeTween = TweenService:Create(descendant, TweenInfo.new(fadeOutTime), tweenInfo)
+                fadeTween:Play()
+            end
+        end
+        local frameTween = TweenService:Create(frame, TweenInfo.new(fadeOutTime), {BackgroundTransparency = 1})
+        frameTween:Play()
+        frameTween.Completed:Connect(
+            function()
+                frame.Visible = false
+            end
+        )
+    end
+    closeButton.MouseButton1Click:Connect(
+        function()
+            fadeOutFrameAndContents(frame)
+        end
+    )
+end
+task.spawn(C_a)
+local function C_b()
+    local script = G2L["b"]
+    local player = game.Players.LocalPlayer
+    local screenGui = script.Parent.Parent
+    local frame = screenGui:WaitForChild("Frame")
+    local copyButton = frame:WaitForChild("copy")
+    local function onCopyButtonClicked()
+        local link = "https://discord.gg/dNkASVSBXr"
+        setclipboard(link)
+    end
+    copyButton.MouseButton1Click:Connect(onCopyButtonClicked)
+end
+task.spawn(C_b)
+local function C_c()
+    local script = G2L["c"]
+    local TweenService = game:GetService("TweenService")
+    local player = game.Players.LocalPlayer
+    local screenGui = script.Parent.Parent
+    local frame = screenGui:WaitForChild("Frame")
+    local popOutTime = 0.5
+    frame.Size = UDim2.new(0, 0, 0, 0)
+    frame.Visible = true
+    local tweenInfo = TweenInfo.new(popOutTime, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out)
+    local targetSize = UDim2.new(0, 200, 0, 195)
+    local popOutTween = TweenService:Create(frame, tweenInfo, {Size = targetSize})
+    popOutTween:Play()
+end
+task.spawn(C_c)
+
+return G2L["1"], require;
+local G2L = {}
+G2L["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"));
+G2L["2"] = Instance.new("Frame", G2L["1"])
+G2L["2"]["BorderSizePixel"] = 0
+G2L["2"]["BackgroundColor3"] = Color3.fromRGB(253, 198, 255)
+G2L["2"]["Size"] = UDim2.new(0, 316, 0, 128)
+G2L["2"]["Position"] = UDim2.new(0.5, -150, 0.5, -50)
+G2L["2"]["BorderColor3"] = Color3.fromRGB(253, 254, 255)
+G2L["3"] = Instance.new("LocalScript", G2L["2"])
+G2L["3"]["Name"] = [[Drag]]
+G2L["4"] = Instance.new("UICorner", G2L["2"])
+G2L["4"]["CornerRadius"] = UDim.new(0, 4)
+G2L["5"] = Instance.new("ImageLabel", G2L["2"])
+G2L["5"]["BorderSizePixel"] = 0
+G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["5"]["Image"] = [[rbxassetid://72161096187712]]
+G2L["5"]["Size"] = UDim2.new(0, 316, 0, 128)
+G2L["5"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["5"]["LayoutOrder"] = -6
+G2L["6"] = Instance.new("UICorner", G2L["5"])
+G2L["6"]["CornerRadius"] = UDim.new(0, 4)
+G2L["7"] = Instance.new("TextBox", G2L["5"])
+G2L["7"]["PlaceholderColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["7"]["BorderSizePixel"] = 0
+G2L["7"]["TextWrapped"] = true
+G2L["7"]["TextTransparency"] = 0.41
+G2L["7"]["TextScaled"] = true
+G2L["7"]["BackgroundColor3"] = Color3.fromRGB(255, 177, 146)
+G2L["7"]["FontFace"] = Font.new([[rbxasset://fonts/families/ComicNeueAngular.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["7"]["PlaceholderText"] = [[Text]]
+G2L["7"]["Size"] = UDim2.new(0.84333, -20, 0.33938, -10)
+G2L["7"]["Position"] = UDim2.new(0, 34, 0, 47)
+G2L["7"]["Text"] = [[]]
+G2L["7"]["LayoutOrder"] = 8
+G2L["7"]["BackgroundTransparency"] = 0.2
+G2L["8"] = Instance.new("UICorner", G2L["7"])
+G2L["8"]["CornerRadius"] = UDim.new(0, 2)
+G2L["9"] = Instance.new("TextButton", G2L["5"])
+G2L["9"]["TextWrapped"] = true
+G2L["9"]["BorderSizePixel"] = 0
+G2L["9"]["TextSize"] = 28
+G2L["9"]["BackgroundColor3"] = Color3.fromRGB(255, 231, 203)
+G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["9"]["Size"] = UDim2.new(0.37709, -20, 0.27187, -10)
+G2L["9"]["BackgroundTransparency"] = 0.2
+G2L["9"]["LayoutOrder"] = 5
+G2L["9"]["Text"] = [[send]]
+G2L["9"]["Position"] = UDim2.new(0.28447, 10, 0.71938, 0)
+G2L["a"] = Instance.new("LocalScript", G2L["9"])
+G2L["b"] = Instance.new("UICorner", G2L["9"])
+G2L["b"]["CornerRadius"] = UDim.new(0, 2)
+G2L["c"] = Instance.new("LocalScript", G2L["9"])
+G2L["c"]["Enabled"] = false
+G2L["c"]["Disabled"] = true
+G2L["d"] = Instance.new("TextLabel", G2L["5"])
+G2L["d"]["TextWrapped"] = true
+G2L["d"]["TextStrokeTransparency"] = 0.73
+G2L["d"]["BorderSizePixel"] = 0
+G2L["d"]["TextScaled"] = true
+G2L["d"]["BackgroundColor3"] = Color3.fromRGB(173, 255, 255)
+G2L["d"]["TextSize"] = 14
+G2L["d"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["d"]["TextColor3"] = Color3.fromRGB(255, 255, 255)
+G2L["d"]["BackgroundTransparency"] = 0.45
+G2L["d"]["Size"] = UDim2.new(0, 316, 0, 34)
+G2L["d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["d"]["Text"] = [[Chat Bypasser By Darky]]
+G2L["e"] = Instance.new("UICorner", G2L["d"])
+G2L["e"]["CornerRadius"] = UDim.new(0, 4)
+G2L["f"] = Instance.new("TextButton", G2L["2"])
+G2L["f"]["TextWrapped"] = true
+G2L["f"]["BorderSizePixel"] = 0
+G2L["f"]["TextSize"] = 12
+G2L["f"]["TextColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["f"]["TextScaled"] = true
+G2L["f"]["BackgroundColor3"] = Color3.fromRGB(255, 139, 149)
+G2L["f"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+G2L["f"]["Size"] = UDim2.new(0, 83, 0, 19)
+G2L["f"]["BackgroundTransparency"] = 0.3
+G2L["f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0)
+G2L["f"]["Text"] = [[Made By:Darky!!]]
+G2L["f"]["Position"] = UDim2.new(0, 0, 0.85156, 0)
+G2L["10"] = Instance.new("UICorner", G2L["f"])
+G2L["10"]["CornerRadius"] = UDim.new(0, 2)
+G2L["11"] = Instance.new("LocalScript", G2L["f"])
+
+local function C_3()
+    local script = G2L["3"]
+    local UserInputService = game:GetService("UserInputService")
+    local gui = script.Parent
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+    local function update(input)
+        local delta = input.Position - dragStart
+        gui.Position =
+            UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+    gui.InputBegan:Connect(
+        function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = gui.Position
+                input.Changed:Connect(
+                    function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            dragging = false
+                        end
+                    end
+                )
+            end
+        end
+    )
+    gui.InputChanged:Connect(
+        function(input)
+            if
+                input.UserInputType == Enum.UserInputType.MouseMovement or
+                    input.UserInputType == Enum.UserInputType.Touch
+             then
+                dragInput = input
+            end
+        end
+    )
+    UserInputService.InputChanged:Connect(
+        function(input)
+            if input == dragInput and dragging then
+                update(input)
+            end
+        end
+    )
+end
+task.spawn(C_3)
+local function C_a()
+    local script = G2L["a"]
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    local TextChatService = game:GetService("TextChatService")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local StarterGui = game:GetService("StarterGui")
+    local textButton = script.Parent
+    local textBox = script.Parent.Parent.TextBox
+    local chat = TextChatService.ChatInputBarConfiguration.TargetTextChannel
+    local function replace(str, find_str, replace_str)
+        local escaped_find_str = find_str:gsub("[%-%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
+        return str:gsub(escaped_find_str, replace_str)
+    end
+local letters = {
+    ["A"] = "🅐",
+    ["a"] = "🅐",
+    ["B"] = "🅑",
+    ["b"] = "🅑",
+    ["C"] = "🅒",
+    ["c"] = "🅒",
+    ["D"] = "🅓",
+    ["d"] = "🅓",
+    ["E"] = "🅔",
+    ["e"] = "🅔",
+    ["F"] = "🅕",
+    ["f"] = "🅕",
+    ["G"] = "🅖",
+    ["g"] = "🅖",
+    ["H"] = "🅗",
+    ["h"] = "🅗",
+    ["I"] = "🅘",
+    ["i"] = "🅘",
+    ["J"] = "🅙",
+    ["j"] = "🅙",
+    ["K"] = "🅚",
+    ["k"] = "🅚",
+    ["L"] = "🅛",
+    ["l"] = "🅛",
+    ["M"] = "🅜",
+    ["m"] = "🅜",
+    ["N"] = "🅝",
+    ["n"] = "🅝",
+    ["O"] = "🅞",
+    ["o"] = "🅞",
+    ["P"] = "🅟",
+    ["p"] = "🅟",
+    ["Q"] = "🅠",
+    ["q"] = "🅠",
+    ["R"] = "🅡",
+    ["r"] = "🅡",
+    ["S"] = "🅢",
+    ["s"] = "🅢",
+    ["T"] = "🅣",
+    ["t"] = "🅣",
+    ["U"] = "🅤",
+    ["u"] = "🅤",
+    ["V"] = "🅥",
+    ["v"] = "🅥",
+    ["W"] = "🅦",
+    ["w"] = "🅦",
+    ["X"] = "🅧",
+    ["x"] = "🅧",
+    ["Y"] = "🅨",
+    ["y"] = "🅨",
+    ["Z"] = "🅩",
+    ["z"] = "🅩",
+    [" "] = "  "
+}
+
+    local function filter(message)
+        for search, replacement in pairs(letters) do
+            message = replace(message, search, replacement)
+        end
+        return message
+    end
+    local function showNotification(title, text)
+        StarterGui:SetCore("SendNotification", {Title = title, Text = text, Duration = 5})
+    end
+    local function sendChat(msg)
+        local filteredMessage = game:GetService("Chat"):FilterStringForBroadcast(msg, LocalPlayer)
+        local tagged = filteredMessage ~= msg
+        if tagged then
+            showNotification("chat tagged", "it got tagged man i hate to say it")
+            textBox.Text = ""
+        else
+            if TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
+                ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
+            else
+                chat:SendAsync(msg)
+            end
+            textBox.Text = ""
+        end
+    end
+    local function processText()
+        local inputText = textBox.Text
+        local convertedText = filter(inputText)
+        sendChat(convertedText)
+    end
+    textButton.MouseButton1Click:Connect(processText)
+    textBox.FocusLost:Connect(
+        function(enterPressed)
+            if enterPressed then
+                processText()
+            end
+        end
+    )
+end
+task.spawn(C_a)
+local function C_11()
+    local script = G2L["11"]
+    local main = script.Parent.Parent.ImageLabel
+    local button = script.Parent
+    local function toggleVisibility()
+        for _, child in ipairs(main:GetChildren()) do
+            if child:IsA("TextBox") or child:IsA("TextButton") or child:IsA("TextLabel") then
+                child.Visible = not child.Visible
+            end
+        end
+    end
+    button.MouseButton1Click:Connect(toggleVisibility)
+end
+task.spawn(C_11)
+return G2L["1"], require
+
+  end
+})
+
+MinimizeButton({
+  Image = "rbxassetid://72161096187712",
+  Size = {60, 60},
+  Color = Color3.fromRGB(10, 10, 10),
+  Corner = true,
+  Stroke = false,
+  StrokeColor = Color3.fromRGB(255, 0, 0)
+})
